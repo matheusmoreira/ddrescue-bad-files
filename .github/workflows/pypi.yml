@@ -1,0 +1,99 @@
+name: pypi
+on:
+  push:
+    branches: [ "master" ]
+
+jobs:
+  build:
+    name: Build and store package
+    runs-on: ubuntu-latest
+    container: archlinux:base-devel
+
+    steps:
+    - name: Initialize pacman keys
+      run: pacman-key --init
+
+    - name: Update packages and install dependencies
+      run: >-
+        pacman -Syu --noconfirm
+        python
+        python-pip
+        python-pipx
+        python-build
+        python-intervaltree
+
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+
+    - name: Build package
+      run: python -m build
+
+    - name: Upload package
+      uses: actions/upload-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+
+  publish-to-pypi:
+    name: Publish package to PyPI
+    if: startsWith(github.ref, 'refs/tags/')  # only publish to PyPI on tag pushes
+    needs:
+    - build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/p/ddrescue-bad-files
+    permissions:
+      id-token: write
+
+    steps:
+    - name: Download package
+      uses: actions/download-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+
+    - name: Publish package to PyPI
+      uses: pypa/gh-action-pypi-publish@release/v1
+
+  github-release:
+    name: Sign and upload package to GitHub Release
+    needs:
+    - publish-to-pypi
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+      id-token: write
+
+    steps:
+    - name: Download package
+      uses: actions/download-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
+
+    - name: Sign the package
+      uses: sigstore/gh-action-sigstore-python@v3.0.0
+      with:
+        inputs: >-
+          ./dist/*.tar.gz
+          ./dist/*.whl
+
+    - name: Create GitHub Release
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      run: >-
+        gh release create
+        "$GITHUB_REF_NAME"
+        --repo "$GITHUB_REPOSITORY"
+        --notes ""
+
+    - name: Upload artifact signatures to GitHub Release
+      env:
+        GITHUB_TOKEN: ${{ github.token }}
+      run: >-
+        gh release upload
+        "$GITHUB_REF_NAME" dist/**
+        --repo "$GITHUB_REPOSITORY"
