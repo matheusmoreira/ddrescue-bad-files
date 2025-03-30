@@ -1,0 +1,56 @@
+[build-system]
+requires = ["setuptools >= 75.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ddrescue-bad-files"
+version = "0.1.0"
+description = "Correlates file system data to bad block data from GNU ddrescue map files"
+readme = "README.md"
+license = "AGPL-3.0-or-later"
+dependencies = [
+  "intervaltree >= 3.1.0",
+  "pycdlib >= 1.14.0",
+]
+authors = [
+  {name = "Matheus Afonso Martins Moreira", email = "matheus@matheusmoreira.com"},
+]
+maintainers = [
+  {name = "Matheus Afonso Martins Moreira", email = "matheus@matheusmoreira.com"},
+]
+keywords = [
+  "bad blocks",
+  "bad sectors",
+  "ddrescue",
+  "GNU ddrescue",
+  "rescue",
+  "corruption",
+  "filesystem",
+  "image",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Information Technology",
+  "Intended Audience :: System Administrators",
+  "Intended Audience :: Other Audience",
+  "Natural Language :: English",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Topic :: System",
+  "Topic :: System :: Filesystems",
+  "Topic :: System :: Archiving :: Backup",
+  "Topic :: System :: Archiving :: Mirroring",
+  "Topic :: Utilities",
+  "Topic :: Other/Nonlisted Topic",
+]
+
+[project.scripts]
+ddrescue-bad-files = "ddrescue.bad_files:run"
+
+[project.urls]
+Homepage = "https://github.com/matheusmoreira/ddrescue-bad-files"
+Repository = "https://github.com/matheusmoreira/ddrescue-bad-files.git"
+Issues = "https://github.com/matheusmoreira/ddrescue-bad-files/issues"
