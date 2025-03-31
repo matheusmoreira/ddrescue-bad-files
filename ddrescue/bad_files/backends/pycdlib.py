@@ -1,8 +1,8 @@
-from .. import backend
+from ddrescue.bad_files.backend import Backend
 
 import pycdlib
 
-class PyCdlib(backend.Backend):
+class PyCdlib(Backend):
     def __init__(self, image):
         self.pycdlib = pycdlib.PyCdlib()
         self.pycdlib.open_fp(image)
